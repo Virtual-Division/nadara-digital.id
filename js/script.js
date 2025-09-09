@@ -2,6 +2,9 @@
 
 // DOM Content Loaded Event
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme first
+    initThemeToggle();
+    
     // Initialize all features
     initMobileNavigation();
     initSmoothScrolling();
@@ -19,6 +22,81 @@ document.addEventListener('DOMContentLoaded', function() {
     debounceScrollEvents();
     preloadCriticalResources();
 });
+
+// Theme Toggle Functionality
+function initThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+    const lightIcon = document.getElementById('lightIcon');
+    const darkIcon = document.getElementById('darkIcon');
+    const body = document.body;
+    const root = document.documentElement;
+    
+    // Check for saved theme preference or default to device preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Set initial theme
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (prefersDark) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+    
+    // Toggle theme on click
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = root.classList.contains('light-mode') ? 'light' : 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+    
+    function setTheme(theme) {
+        if (theme === 'light') {
+            root.classList.add('light-mode');
+            updateThemeIcons('light');
+        } else {
+            root.classList.remove('light-mode');
+            updateThemeIcons('dark');
+        }
+        
+        // Update meta theme-color for mobile browsers
+        updateMetaThemeColor(theme);
+    }
+    
+    function updateThemeIcons(theme) {
+        if (lightIcon && darkIcon) {
+            if (theme === 'light') {
+                lightIcon.classList.add('active');
+                darkIcon.classList.remove('active');
+            } else {
+                lightIcon.classList.remove('active');
+                darkIcon.classList.add('active');
+            }
+        }
+    }
+    
+    function updateMetaThemeColor(theme) {
+        let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (!metaThemeColor) {
+            metaThemeColor = document.createElement('meta');
+            metaThemeColor.name = 'theme-color';
+            document.head.appendChild(metaThemeColor);
+        }
+        
+        metaThemeColor.content = theme === 'light' ? '#ffffff' : '#0a0a0a';
+    }
+}
 
 // Mobile Navigation Toggle
 function initMobileNavigation() {

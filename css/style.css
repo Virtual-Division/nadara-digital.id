@@ -23,6 +23,24 @@
     --neon-glow-strong: 0 0 30px rgba(104, 211, 145, 0.6);
 }
 
+/* Light Mode Variables */
+:root.light-mode {
+    --primary-green: #059669;
+    --primary-green-dark: #047857;
+    --secondary-green: #10b981;
+    --accent-cyan: #0891b2;
+    --dark-bg: #ffffff;
+    --dark-surface: #f8fafc;
+    --dark-surface-light: #e2e8f0;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(5, 150, 105, 0.2);
+    --neon-glow: 0 0 20px rgba(5, 150, 105, 0.3);
+    --neon-glow-strong: 0 0 30px rgba(5, 150, 105, 0.6);
+}
+
 body {
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
@@ -55,7 +73,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    background: rgba(15, 20, 25, 0.9);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     z-index: 1000;
     padding: 1rem 0;
@@ -70,6 +88,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 2rem;
 }
 
 .nav-logo {
@@ -78,17 +97,57 @@ body {
     gap: 15px;
 }
 
+/* Theme Toggle */
+.theme-toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background: var(--dark-surface-light);
+    border-radius: 15px;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+
+.theme-toggle:hover {
+    box-shadow: var(--neon-glow);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-cyan));
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: var(--neon-glow);
+}
+
+.light-mode .theme-toggle-slider {
+    transform: translateX(30px);
+}
+
+.theme-toggle-icon {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    z-index: 1;
+    transition: color 0.3s ease;
+}
+
+.theme-toggle-icon.active {
+    color: var(--primary-green);
+}
+
 .logo {
     height: 50px;
     width: auto;
     filter: drop-shadow(var(--neon-glow));
-}
-
-.logo-text {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary-green);
-    text-shadow: var(--neon-glow);
 }
 
 .nav-menu {
@@ -127,6 +186,12 @@ body {
     width: 100%;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .hamburger {
     display: none;
     flex-direction: column;
@@ -145,10 +210,9 @@ body {
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, 
-        rgba(15, 20, 25, 0.9) 0%, 
-        rgba(26, 32, 44, 0.8) 50%, 
-        rgba(15, 20, 25, 0.9) 100%),
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23374151" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        var(--bg-primary) 0%, 
+        var(--bg-secondary) 50%, 
+        var(--bg-primary) 100%);
     color: var(--text-primary);
     padding: 140px 0 100px;
     min-height: 100vh;
@@ -157,9 +221,50 @@ body {
     justify-content: center;
     position: relative;
     overflow: hidden;
+    transition: background 0.3s ease;
 }
 
+/* Dark mode background pattern - visible only in dark mode */
 .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23374151" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+/* Hide background pattern in light mode */
+.light-mode .hero::before {
+    opacity: 0;
+}
+
+/* Media query for system preference - dark mode */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light-mode) .hero::before {
+        opacity: 1;
+    }
+}
+
+/* Media query for system preference - light mode */
+@media (prefers-color-scheme: light) {
+    :root:not(.dark-mode) .hero::before {
+        opacity: 0;
+    }
+}
+
+/* Ensure hero content is above the background pattern and gradient effects */
+.hero > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Floating gradient effects - now handled by the main hero::before with dark/light mode support */
+.hero::after {
     content: '';
     position: absolute;
     top: 0;
@@ -170,6 +275,13 @@ body {
         radial-gradient(circle at 30% 70%, rgba(104, 211, 145, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 70% 30%, rgba(79, 209, 199, 0.1) 0%, transparent 50%);
     animation: float 6s ease-in-out infinite;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+/* Adjust gradient opacity for light mode */
+.light-mode .hero::after {
+    opacity: 0.4;
 }
 
 .hero-container {
@@ -1247,6 +1359,27 @@ body {
         transform: translateY(-8px) rotate(-45deg);
     }
 
+    .theme-toggle {
+        width: 50px;
+        height: 25px;
+        padding: 0 3px;
+    }
+
+    .theme-toggle-slider {
+        width: 19px;
+        height: 19px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .light-mode .theme-toggle-slider {
+        transform: translateX(25px);
+    }
+
+    .theme-toggle-icon {
+        font-size: 0.7rem;
+    }
+
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
@@ -1560,4 +1693,178 @@ html {
 .revealed {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Light mode specific styles */
+.light-mode .particles {
+    opacity: 0.3;
+}
+
+.light-mode .particle {
+    background: linear-gradient(45deg, var(--primary-green), var(--accent-cyan));
+    opacity: 0.6;
+}
+
+.light-mode .notification {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .back-to-top {
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-cyan));
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+/* Particles Background */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(45deg, var(--primary-green), var(--accent-cyan));
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: particleFloat 6s linear infinite;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    max-width: 400px;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+
+.notification-success {
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+}
+
+.notification-error {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+}
+
+.notification-info {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.notification-message {
+    flex: 1;
+    white-space: pre-line;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: currentColor;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(104, 211, 145, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-to-top:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(104, 211, 145, 0.4);
+}
+
+/* Scroll Progress Bar */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-cyan));
+    z-index: 10001;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 10px rgba(104, 211, 145, 0.5);
+}
+
+/* Reveal Animation Classes */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Theme transition */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
