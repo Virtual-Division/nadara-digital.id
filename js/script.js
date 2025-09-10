@@ -489,8 +489,33 @@ function animateCounter(statElement) {
     const counterElement = statElement.querySelector('h3');
     if (!counterElement || counterElement.dataset.animated) return;
     
-    const targetValue = parseInt(counterElement.textContent.replace(/[^0-9]/g, ''));
-    const suffix = counterElement.textContent.replace(/[0-9]/g, '');
+    // Define hardcoded final values for each stat type
+    const statText = statElement.querySelector('p').textContent;
+    let finalValue;
+    
+    if (statText.includes('Successful Projects')) {
+        finalValue = '50+';
+    } else if (statText.includes('System Uptime')) {
+        finalValue = '99.9%';
+    } else if (statText.includes('Support Available')) {
+        finalValue = '24/7';
+    } else if (statText.includes('Years Experience')) {
+        finalValue = '5+';
+    } else {
+        finalValue = counterElement.textContent; // fallback
+    }
+    
+    // Extract numeric part for animation
+    const numericMatch = finalValue.match(/([0-9.]+)/);
+    if (!numericMatch) {
+        counterElement.textContent = finalValue;
+        counterElement.dataset.animated = 'true';
+        return;
+    }
+    
+    const targetValue = parseFloat(numericMatch[1]);
+    const prefix = finalValue.substring(0, numericMatch.index);
+    const suffix = finalValue.substring(numericMatch.index + numericMatch[0].length);
     const duration = 2000;
     const startTime = performance.now();
     
@@ -500,14 +525,22 @@ function animateCounter(statElement) {
         
         // Easing function for smooth animation
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        const currentValue = Math.floor(targetValue * easeOutQuart);
+        let currentValue;
         
-        counterElement.textContent = currentValue + suffix;
+        if (finalValue.includes('.')) {
+            // Handle decimal values (like 99.9%)
+            currentValue = (targetValue * easeOutQuart).toFixed(1);
+        } else {
+            // Handle integer values
+            currentValue = Math.floor(targetValue * easeOutQuart);
+        }
+        
+        counterElement.textContent = prefix + currentValue + suffix;
         
         if (progress < 1) {
             requestAnimationFrame(updateCounter);
         } else {
-            counterElement.textContent = targetValue + suffix;
+            counterElement.textContent = finalValue;
             counterElement.dataset.animated = 'true';
         }
     }
