@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initParticleEffect();
     initTypingEffect();
     initGlowEffects();
+    initServicesCarousel();
     
     // Performance optimizations
     debounceScrollEvents();
@@ -104,12 +105,51 @@ function initMobileNavigation() {
     const navMenu = document.querySelector('.nav-menu');
     
     if (hamburger && navMenu) {
+        // Initialize ARIA state based on viewport
+        const syncAriaWithViewport = () => {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                const isOpen = navMenu.classList.contains('active');
+                hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                navMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            } else {
+                hamburger.setAttribute('aria-expanded', 'false');
+                navMenu.removeAttribute('aria-hidden');
+                document.body.style.overflow = '';
+            }
+        };
+        syncAriaWithViewport();
+        window.addEventListener('resize', debounce(syncAriaWithViewport, 150));
+
         hamburger.addEventListener('click', function() {
             hamburger.classList.toggle('active');
             navMenu.classList.toggle('active');
             
+            const isOpen = navMenu.classList.contains('active');
+            hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            // Only hide from assistive tech on mobile when closed
+            if (window.innerWidth <= 768) {
+                navMenu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            }
+            
             // Prevent body scroll when menu is open
-            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+            
+            // Manage focus for accessibility
+            if (isOpen) {
+                const firstLink = navMenu.querySelector('.nav-link');
+                if (firstLink) firstLink.focus();
+            } else {
+                hamburger.focus();
+            }
+        });
+        
+        // Keyboard support for Enter/Space on the hamburger
+        hamburger.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                hamburger.click();
+            }
         });
         
         // Close menu when clicking on nav links
@@ -118,6 +158,10 @@ function initMobileNavigation() {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
                 navMenu.classList.remove('active');
+                hamburger.setAttribute('aria-expanded', 'false');
+                if (window.innerWidth <= 768) {
+                    navMenu.setAttribute('aria-hidden', 'true');
+                }
                 document.body.style.overflow = '';
             });
         });
@@ -127,6 +171,10 @@ function initMobileNavigation() {
             if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
                 hamburger.classList.remove('active');
                 navMenu.classList.remove('active');
+                hamburger.setAttribute('aria-expanded', 'false');
+                if (window.innerWidth <= 768) {
+                    navMenu.setAttribute('aria-hidden', 'true');
+                }
                 document.body.style.overflow = '';
             }
         });
@@ -136,6 +184,7 @@ function initMobileNavigation() {
 // Smooth Scrolling for Navigation Links
 function initSmoothScrolling() {
     const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -150,7 +199,7 @@ function initSmoothScrolling() {
                 
                 window.scrollTo({
                     top: targetPosition,
-                    behavior: 'smooth'
+                    behavior: prefersReduced ? 'auto' : 'smooth'
                 });
                 
                 // Update active nav link
@@ -186,12 +235,8 @@ function initNavbarEffects() {
             navbar.classList.remove('scrolled');
         }
         
-        // Hide/show navbar on scroll
-        if (scrollTop > lastScrollTop && scrollTop > 200) {
-            navbar.style.transform = 'translateY(-100%)';
-        } else {
-            navbar.style.transform = 'translateY(0)';
-        }
+        // Keep navbar always visible - removed auto-hide functionality
+        navbar.style.transform = 'translateY(0)';
         
         lastScrollTop = scrollTop;
         
@@ -550,19 +595,43 @@ function animateCounter(statElement) {
 
 // Lazy Loading for Images
 function initLazyLoading() {
+    // Progressive enhancement for blur-up images regardless of data-src
+    const progressive = document.querySelectorAll('img.blur-up');
+    progressive.forEach(img => {
+        if (img.complete) {
+            img.classList.add('loaded');
+        } else {
+            const onLoaded = () => img.classList.add('loaded');
+            img.addEventListener('load', onLoaded, { once: true });
+        }
+    });
+
+    // IntersectionObserver for swapping data-src/srcset when provided
     const images = document.querySelectorAll('img[data-src]');
-    
-    const imageObserver = new IntersectionObserver((entries) => {
+    if (!images.length) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.add('loaded');
-                imageObserver.unobserve(img);
+                if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+                if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+                if (img.dataset.sizes) img.sizes = img.dataset.sizes;
+                if (img.dataset.src) img.src = img.dataset.src;
+
+                const onLoad = () => {
+                    img.classList.add('loaded');
+                    img.removeEventListener('load', onLoad);
+                };
+                img.addEventListener('load', onLoad, { once: !prefersReducedMotion });
+
+                observer.unobserve(img);
             }
         });
-    });
-    
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+
     images.forEach(img => imageObserver.observe(img));
 }
 
@@ -810,5 +879,111 @@ style.textContent = keyboardNavCSS;
 document.head.appendChild(style);
 
 // Console welcome message
+// Services Carousel Functionality
+function initServicesCarousel() {
+    const servicesGrid = document.querySelector('.services-grid');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const serviceCards = document.querySelectorAll('.service-card');
+    
+    if (!servicesGrid || !prevBtn || !nextBtn || serviceCards.length === 0) return;
+    
+    let currentIndex = 0;
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+    
+    // Update carousel position (disabled for mobile)
+    function updateCarousel() {
+        // Carousel functionality disabled for mobile - using stacked layout instead
+        return;
+    }
+    
+    // Next button functionality
+    function nextSlide() {
+        if (currentIndex < serviceCards.length - 1) {
+            currentIndex++;
+        } else {
+            currentIndex = 0; // Loop back to first
+        }
+        updateCarousel();
+    }
+    
+    // Previous button functionality
+    function prevSlide() {
+        if (currentIndex > 0) {
+            currentIndex--;
+        } else {
+            currentIndex = serviceCards.length - 1; // Loop to last
+        }
+        updateCarousel();
+    }
+    
+    // Touch/Mouse events disabled for mobile stacked layout
+    function handleStart(e) {
+        // Disabled for mobile stacked layout
+        return;
+    }
+    
+    function handleMove(e) {
+        // Disabled for mobile stacked layout
+        return;
+    }
+    
+    function handleEnd() {
+        // Disabled for mobile stacked layout
+        return;
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // Touch events
+    servicesGrid.addEventListener('touchstart', handleStart, { passive: false });
+    servicesGrid.addEventListener('touchmove', handleMove, { passive: false });
+    servicesGrid.addEventListener('touchend', handleEnd);
+    
+    // Mouse events for desktop drag
+    servicesGrid.addEventListener('mousedown', handleStart);
+    servicesGrid.addEventListener('mousemove', handleMove);
+    servicesGrid.addEventListener('mouseup', handleEnd);
+    servicesGrid.addEventListener('mouseleave', handleEnd);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (window.innerWidth <= 768 && servicesGrid.contains(document.activeElement)) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextSlide();
+            }
+        }
+    });
+    
+    // Auto-play functionality disabled for mobile stacked layout
+    let autoPlayInterval;
+    
+    function startAutoPlay() {
+        // Disabled for mobile stacked layout
+        return;
+    }
+    
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', debounce(function() {
+        if (window.innerWidth > 768) {
+            // Desktop/tablet view - no special handling needed
+            currentIndex = 0;
+        }
+        // Mobile uses stacked layout - no carousel functionality
+    }, 250));
+}
+
 console.log('%c🚀 Nadara Digital Solusi', 'color: #68d391; font-size: 24px; font-weight: bold;');
 console.log('%cWebsite loaded successfully! Modern, futuristic, and ready for digital transformation.', 'color: #4fd1c7; font-size: 14px;');

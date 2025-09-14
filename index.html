@@ -9,19 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <a href="#home" class="skip-link">Skip to content</a>
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Primary">
         <div class="nav-container">
             <div class="nav-logo">
-                <img src="images/logo.svg" alt="Nadara Digital Solusi" class="logo">
+                <a href="#home">
+                    <img src="images/logo.svg" alt="Nadara Digital Solusi" class="logo">
+                </a>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#about" class="nav-link">About Us</a></li>
+            <ul class="nav-menu" id="primaryNav">
+                <li><a href="#about" class="nav-link">Profile</a></li>
                 <li><a href="#services" class="nav-link">Services</a></li>
                 <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
-                <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
-                <li><a href="#blog" class="nav-link">Insights</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
             
@@ -33,7 +33,7 @@
                     <i class="fas fa-moon theme-toggle-icon" id="darkIcon"></i>
                 </div>
                 
-                <div class="hamburger">
+                <div class="hamburger" role="button" aria-label="Toggle navigation menu" aria-controls="primaryNav" aria-expanded="false" tabindex="0">
                     <span class="bar"></span>
                     <span class="bar"></span>
                     <span class="bar"></span>
@@ -54,9 +54,9 @@
                 </div>
             </div>
             <div class="hero-image">
-                <div class="hero-graphic">
-                    <i class="fas fa-network-wired"></i>
-                </div>
+                <figure class="image-frame image-frame-hero ratio-16x9">
+                    <img class="frame-media" src="images/hero-graphic.svg" alt="Nadara Digital IT Network Illustration" width="1280" height="720" loading="eager" decoding="async" fetchpriority="high">
+                </figure>
             </div>
         </div>
         <div class="hero-stats">
@@ -83,7 +83,7 @@
     <section id="about" class="about">
         <div class="container">
             <div class="section-header">
-                <h2>About Nadara Digital Solusi</h2>
+                <h2>Profile Nadara Digital Solusi</h2>
                 <p>Your trusted partner in digital transformation and IT excellence</p>
             </div>
             <div class="about-content">
@@ -138,65 +138,94 @@
                 <h2>Our Services</h2>
                 <p>Comprehensive IT solutions tailored to your business needs</p>
             </div>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-cogs"></i>
+            <div class="services-visual">
+                <img src="images/it-services.svg" alt="IT Services Illustration" class="services-image">
+            </div>
+            <div class="services-container">
+                <div class="services-grid">
+                    <div class="carousel-controls">
+                        <button class="carousel-btn prev-btn" aria-label="Previous service">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn next-btn" aria-label="Next service">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
-                    <h3>System Integration Services</h3>
-                    <p>Seamlessly connect disparate systems and applications to create unified, efficient workflows that enhance productivity and data consistency.</p>
-                    <ul class="service-features">
-                        <li>Enterprise Application Integration</li>
-                        <li>Data Migration & Synchronization</li>
-                        <li>API Development & Management</li>
-                        <li>Legacy System Modernization</li>
-                    </ul>
-                    <a href="#contact" class="service-btn">Learn More</a>
+                <div class="service-card">
+                    <div class="service-left">
+                        <div class="service-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <a href="#contact" class="service-btn">Learn More</a>
+                    </div>
+                    <div class="service-content">
+                        <h3>System Integration Services</h3>
+                        <p>Seamlessly connect disparate systems and applications to create unified, efficient workflows that enhance productivity and data consistency.</p>
+                        <ul class="service-features">
+                            <li>Enterprise Application Integration</li>
+                            <li>Data Migration & Synchronization</li>
+                            <li>API Development & Management</li>
+                            <li>Legacy System Modernization</li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-chart-line"></i>
+                    <div class="service-left">
+                        <div class="service-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <a href="#contact" class="service-btn">Learn More</a>
                     </div>
-                    <h3>IT Consulting & Strategy</h3>
-                    <p>Strategic guidance to align your technology investments with business objectives and drive digital transformation initiatives.</p>
-                    <ul class="service-features">
-                        <li>Digital Transformation Roadmap</li>
-                        <li>IT Infrastructure Planning</li>
-                        <li>Cybersecurity Consulting</li>
-                        <li>Cloud Strategy & Migration</li>
-                    </ul>
-                    <a href="#contact" class="service-btn">Learn More</a>
+                    <div class="service-content">
+                        <h3>IT Consulting & Strategy</h3>
+                        <p>Strategic guidance to align your technology investments with business objectives and drive digital transformation initiatives.</p>
+                        <ul class="service-features">
+                            <li>Digital Transformation Roadmap</li>
+                            <li>IT Infrastructure Planning</li>
+                            <li>Cybersecurity Consulting</li>
+                            <li>Cloud Strategy & Migration</li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-headset"></i>
+                    <div class="service-left">
+                        <div class="service-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <a href="#contact" class="service-btn">Learn More</a>
                     </div>
-                    <h3>Managed IT Services</h3>
-                    <p>Proactive monitoring and management of your IT infrastructure to ensure optimal performance and minimize downtime.</p>
-                    <ul class="service-features">
-                        <li>24/7 System Monitoring</li>
-                        <li>Help Desk Support</li>
-                        <li>Network Management</li>
-                        <li>Data Backup & Recovery</li>
-                    </ul>
-                    <a href="#contact" class="service-btn">Learn More</a>
+                    <div class="service-content">
+                        <h3>Managed IT Services</h3>
+                        <p>Proactive monitoring and management of your IT infrastructure to ensure optimal performance and minimize downtime.</p>
+                        <ul class="service-features">
+                            <li>24/7 System Monitoring</li>
+                            <li>Help Desk Support</li>
+                            <li>Network Management</li>
+                            <li>Data Backup & Recovery</li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-vr-cardboard"></i>
+                    <div class="service-left">
+                        <div class="service-icon">
+                            <i class="fas fa-vr-cardboard"></i>
+                        </div>
+                        <a href="#contact" class="service-btn">Learn More</a>
                     </div>
-                    <h3>Emerging Technologies: Metaverse & IoT</h3>
-                    <p>Innovative solutions leveraging the latest in virtual reality, augmented reality, and Internet of Things technologies.</p>
-                    <ul class="service-features">
-                        <li>Custom Metaverse Development</li>
-                        <li>AR/VR Applications</li>
-                        <li>IoT Device Integration</li>
-                        <li>Smart Industry Solutions</li>
-                    </ul>
-                    <a href="#contact" class="service-btn">Learn More</a>
+                    <div class="service-content">
+                        <h3>Emerging Technologies: Metaverse & IoT</h3>
+                        <p>Innovative solutions leveraging the latest in virtual reality, augmented reality, and Internet of Things technologies.</p>
+                        <ul class="service-features">
+                            <li>Custom Metaverse Development</li>
+                            <li>AR/VR Applications</li>
+                            <li>IoT Device Integration</li>
+                            <li>Smart Industry Solutions</li>
+                        </ul>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -212,7 +241,9 @@
             <div class="portfolio-grid">
                 <div class="portfolio-item">
                     <div class="portfolio-image">
-                        <i class="fas fa-building"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/portfolio-1.svg" alt="Enterprise system integration project cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="portfolio-content">
                         <h3>Enterprise System Integration</h3>
@@ -239,7 +270,9 @@
                 
                 <div class="portfolio-item">
                     <div class="portfolio-image">
-                        <i class="fas fa-cloud"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/portfolio-2.svg" alt="Cloud migration and strategy project cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="portfolio-content">
                         <h3>Cloud Migration & Strategy</h3>
@@ -266,7 +299,9 @@
                 
                 <div class="portfolio-item">
                     <div class="portfolio-image">
-                        <i class="fas fa-industry"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/portfolio-3.svg" alt="IoT smart factory solution cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="portfolio-content">
                         <h3>IoT Smart Factory Solution</h3>
@@ -382,7 +417,9 @@
             <div class="blog-grid">
                 <article class="blog-post">
                     <div class="post-image">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/blog-1.svg" alt="Future of cloud migration cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
@@ -397,7 +434,9 @@
                 
                 <article class="blog-post">
                     <div class="post-image">
-                        <i class="fas fa-shield-alt"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/blog-2.svg" alt="Cybersecurity best practices cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
@@ -412,7 +451,9 @@
                 
                 <article class="blog-post">
                     <div class="post-image">
-                        <i class="fas fa-vr-cardboard"></i>
+                        <figure class="image-frame ratio-16x9">
+                            <img class="frame-media blur-up" src="images/blog-3.svg" alt="Metaverse applications cover" loading="lazy" decoding="async">
+                        </figure>
                     </div>
                     <div class="post-content">
                         <div class="post-meta">
@@ -476,16 +517,16 @@
                 <form class="contact-form">
                     <h3>Send us a Message</h3>
                     <div class="form-group">
-                        <input type="text" id="name" name="name" placeholder="Your Name" required>
+                        <input type="text" id="name" name="name" placeholder="Your Name" aria-label="Your Name" autocomplete="name" required>
                     </div>
                     <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Your Email" required>
+                        <input type="email" id="email" name="email" placeholder="Your Email" aria-label="Your Email" autocomplete="email" inputmode="email" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" id="phone" name="phone" placeholder="Your Phone Number">
+                        <input type="tel" id="phone" name="phone" placeholder="Your Phone Number" aria-label="Your Phone Number" autocomplete="tel" inputmode="tel">
                     </div>
                     <div class="form-group">
-                        <select id="service" name="service">
+                        <select id="service" name="service" aria-label="Select Service Interest">
                             <option value="">Select Service Interest</option>
                             <option value="system-integration">System Integration</option>
                             <option value="it-consulting">IT Consulting & Strategy</option>
@@ -494,7 +535,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <textarea id="message" name="message" placeholder="Your Message" rows="5" required></textarea>
+                        <textarea id="message" name="message" placeholder="Your Message" aria-label="Your Message" rows="5" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Send Message</button>
                 </form>
@@ -524,9 +565,8 @@
                 <div class="footer-section">
                     <h4>Company</h4>
                     <ul>
-                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#about">Profile</a></li>
                         <li><a href="#portfolio">Portfolio</a></li>
-                        <li><a href="#blog">Insights</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
